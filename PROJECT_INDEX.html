@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduVoice - Project Index</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 48px;
+        }
+        .header h1 {
+            font-size: 56px;
+            margin-bottom: 12px;
+            text-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .subtitle {
+            font-size: 24px;
+            opacity: 0.95;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+        .card {
+            background: white;
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .icon {
+            font-size: 48px;
+        }
+        .card-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1f2937;
+        }
+        .card-description {
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+        .links {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            background: #f3f4f6;
+            border-radius: 12px;
+            text-decoration: none;
+            color: #1f2937;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .link:hover {
+            background: #e5e7eb;
+            transform: translateX(4px);
+        }
+        .link-icon {
+            font-size: 20px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #dbeafe;
+            color: #1e40af;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: auto;
+        }
+        .features {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+        .features h2 {
+            font-size: 32px;
+            color: #1f2937;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .feature {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        .feature-icon {
+            font-size: 28px;
+            flex-shrink: 0;
+        }
+        .feature-text {
+            color: #374151;
+        }
+        .feature-title {
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        .quick-start {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: white;
+            border-radius: 24px;
+            padding: 40px;
+            margin-top: 48px;
+            text-align: center;
+        }
+        .quick-start h2 {
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+        .command {
+            background: rgba(0,0,0,0.2);
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+            margin: 20px 0;
+        }
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 48px;
+            margin-top: 32px;
+        }
+        .stat {
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 48px;
+            font-weight: bold;
+        }
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🎤 EduVoice</h1>
+            <p class="subtitle">Dyslexia Reading Assistant with Microphone-Aware Support</p>
+        </div>
+
+        <!-- Main Cards -->
+        <div class="grid">
+            <!-- Application -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="icon">⚛️</span>
+                    <span class="card-title">Application</span>
+                </div>
+                <p class="card-description">
+                    Full React application with microphone integration, real-time difficulty detection, and intelligent assistance.
+                </p>
+                <div class="links">
+                    <a href="src/App.jsx" class="link">
+                        <span class="link-icon">📄</span>
+                        App.jsx
+                        <span class="badge">Entry Point</span>
+                    </a>
+                    <a href="src/pages/Reader.jsx" class="link">
+                        <span class="link-icon">📖</span>
+                        Reader.jsx
+                        <span class="badge">Core Feature</span>
+                    </a>
+                    <a href="src/services/ASRService.js" class="link">
+                        <span class="link-icon">🎤</span>
+                        ASRService.js
+                        <span class="badge">Speech</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- UI Mockups -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="icon">🎨</span>
+                    <span class="card-title">UI Mockups</span>
+                </div>
+                <p class="card-description">
+                    High-fidelity HTML mockups showing all key interfaces with animations and dyslexia-friendly design.
+                </p>
+                <div class="links">
+                    <a href="mockups/mockup-1-reader-listening.html" class="link">
+                        <span class="link-icon">🎧</span>
+                        Reader Listening
+                    </a>
+                    <a href="mockups/mockup-2-assist-popover.html" class="link">
+                        <span class="link-icon">💡</span>
+                        Assist Popover
+                    </a>
+                    <a href="mockups/mockup-3-self-dashboard.html" class="link">
+                        <span class="link-icon">📊</span>
+                        Self Dashboard
+                    </a>
+                    <a href="mockups/mockup-4-parent-dashboard.html" class="link">
+                        <span class="link-icon">👨‍👩‍👧</span>
+                        Parent Dashboard
+                    </a>
+                </div>
+            </div>
+
+            <!-- Documentation -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="icon">📚</span>
+                    <span class="card-title">Documentation</span>
+                </div>
+                <p class="card-description">
+                    Comprehensive guides covering setup, architecture, design system, and production integration.
+                </p>
+                <div class="links">
+                    <a href="README.md" class="link">
+                        <span class="link-icon">📖</span>
+                        README.md
+                        <span class="badge">Start Here</span>
+                    </a>
+                    <a href="QUICKSTART.md" class="link">
+                        <span class="link-icon">⚡</span>
+                        Quick Start
+                    </a>
+                    <a href="PROJECT_STRUCTURE.md" class="link">
+                        <span class="link-icon">🗂️</span>
+                        Project Structure
+                    </a>
+                    <a href="DESIGN_MOCKUPS.md" class="link">
+                        <span class="link-icon">🎨</span>
+                        Design System
+                    </a>
+                    <a href="SUMMARY.md" class="link">
+                        <span class="link-icon">✅</span>
+                        Project Summary
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features -->
+        <div class="features">
+            <h2>✨ Key Features</h2>
+            <div class="feature-grid">
+                <div class="feature">
+                    <span class="feature-icon">🎤</span>
+                    <div class="feature-text">
+                        <div class="feature-title">Real-Time Monitoring</div>
+                        <div>Detects pauses, repeats, and mispronunciations</div>
+                    </div>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">💡</span>
+                    <div class="feature-text">
+                        <div class="feature-title">Smart Assistance</div>
+                        <div>Simplified explanations with examples</div>
+                    </div>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">🔊</span>
+                    <div class="feature-text">
+                        <div class="feature-title">Text-to-Speech</div>
+                        <div>Word-by-word highlighting during playback</div>
+                    </div>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">👥</span>
+                    <div class="feature-text">
+                        <div class="feature-title">Dual Accounts</div>
+                        <div>Self learning and parent monitoring</div>
+                    </div>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">📊</span>
+                    <div class="feature-text">
+                        <div class="feature-title">Progress Tracking</div>
+                        <div>WPM, accuracy, and assist analytics</div>
+                    </div>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">♿</span>
+                    <div class="feature-text">
+                        <div class="feature-title">Accessibility</div>
+                        <div>Dyslexia-friendly fonts and WCAG compliant</div>
+                    </div>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">📄</span>
+                    <div class="feature-text">
+                        <div class="feature-title">PDF Reports</div>
+                        <div>Downloadable progress reports for parents</div>
+                    </div>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">🔒</span>
+                    <div class="feature-text">
+                        <div class="feature-title">Privacy First</div>
+                        <div>Local processing with explicit consent</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Start -->
+        <div class="quick-start">
+            <h2>🚀 Get Started in 3 Steps</h2>
+            <div class="command">npm install</div>
+            <div class="command">npm run dev</div>
+            <p style="font-size: 20px; margin-top: 20px;">
+                Open <strong>http://localhost:3000</strong> and start exploring!
+            </p>
+
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-value">47</div>
+                    <div class="stat-label">Files Created</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">React Pages</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">4</div>
+                    <div class="stat-label">UI Mockups</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">100%</div>
+                    <div class="stat-label">Complete</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

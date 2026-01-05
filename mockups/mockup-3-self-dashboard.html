@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduVoice - Self Dashboard Mockup</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Verdana', 'Tahoma', Arial, sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #faf5ff 50%, #fef3c7 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        
+        /* Header */
+        .welcome {
+            margin-bottom: 32px;
+        }
+        .welcome h1 {
+            font-size: 40px;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+        .welcome p {
+            font-size: 20px;
+            color: #6b7280;
+        }
+        
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        .action-card {
+            background: white;
+            padding: 40px;
+            border-radius: 32px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .action-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .action-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+        }
+        .action-card-primary {
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            color: white;
+        }
+        .action-card-secondary {
+            background: linear-gradient(135deg, #c084fc, #a855f7);
+            color: white;
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .card-icon {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 16px;
+            border-radius: 20px;
+            font-size: 40px;
+        }
+        .card-arrow {
+            font-size: 32px;
+        }
+        .card-title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+        .card-description {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+        .stat-card {
+            background: white;
+            padding: 24px;
+            border-radius: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        }
+        .stat-icon {
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+        .stat-value {
+            font-size: 36px;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+        .stat-label {
+            font-size: 14px;
+            color: #6b7280;
+        }
+        
+        /* Recent Sessions */
+        .section {
+            background: white;
+            padding: 32px;
+            border-radius: 32px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            margin-bottom: 32px;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .section-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1f2937;
+        }
+        .view-all {
+            color: #0ea5e9;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        .view-all:hover {
+            text-decoration: underline;
+        }
+        
+        /* Session Items */
+        .session-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .session-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 20px;
+            transition: all 0.2s;
+        }
+        .session-item:hover {
+            background: #f3f4f6;
+        }
+        .session-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .session-icon {
+            background: linear-gradient(135deg, #bae6fd, #7dd3fc);
+            padding: 12px;
+            border-radius: 16px;
+            font-size: 20px;
+        }
+        .session-date {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+        .session-details {
+            font-size: 14px;
+            color: #6b7280;
+        }
+        .session-right {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+        .session-metrics {
+            text-align: right;
+        }
+        .metric-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1f2937;
+        }
+        .metric-label {
+            font-size: 12px;
+            color: #6b7280;
+        }
+        .assist-badge {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #92400e;
+        }
+        
+        /* Achievements */
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+        .achievement-card {
+            padding: 20px;
+            border-radius: 20px;
+            border: 2px solid;
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+        .achievement-card-earned {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-color: #fbbf24;
+        }
+        .achievement-card-locked {
+            background: #f9fafb;
+            border-color: #e5e7eb;
+            opacity: 0.6;
+        }
+        .achievement-icon {
+            background: #fbbf24;
+            padding: 12px;
+            border-radius: 16px;
+            font-size: 24px;
+        }
+        .achievement-icon-locked {
+            background: #d1d5db;
+        }
+        .achievement-name {
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+        .achievement-description {
+            font-size: 14px;
+            color: #6b7280;
+        }
+        .achievement-earned {
+            font-size: 12px;
+            color: #f59e0b;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Welcome -->
+        <div class="welcome">
+            <h1>Welcome back, Alex! 👋</h1>
+            <p>Let's continue your reading journey</p>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <div class="action-card action-card-primary">
+                <div class="card-header">
+                    <div class="card-icon">📖</div>
+                    <div class="card-arrow">→</div>
+                </div>
+                <div class="card-title">Start Reading</div>
+                <div class="card-description">Begin a new practice session with microphone assistance</div>
+            </div>
+            
+            <div class="action-card action-card-secondary">
+                <div class="card-header">
+                    <div class="card-icon">📊</div>
+                    <div class="card-arrow">→</div>
+                </div>
+                <div class="card-title">View Progress</div>
+                <div class="card-description">See detailed reports and track your improvement</div>
+            </div>
+        </div>
+        
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon" style="color: #0ea5e9;">📈</div>
+                <div class="stat-value">82</div>
+                <div class="stat-label">Avg WPM</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon" style="color: #10b981;">🎯</div>
+                <div class="stat-value">94%</div>
+                <div class="stat-label">Accuracy</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon" style="color: #f59e0b;">🎤</div>
+                <div class="stat-value">3</div>
+                <div class="stat-label">Assists</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon" style="color: #c084fc;">⏱️</div>
+                <div class="stat-value">3</div>
+                <div class="stat-label">Sessions</div>
+            </div>
+        </div>
+        
+        <!-- Recent Sessions -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">Recent Sessions</div>
+                <a href="#" class="view-all">View All</a>
+            </div>
+            
+            <div class="session-list">
+                <div class="session-item">
+                    <div class="session-left">
+                        <div class="session-icon">📅</div>
+                        <div>
+                            <div class="session-date">Nov 26</div>
+                            <div class="session-details">15 minutes • 245 words</div>
+                        </div>
+                    </div>
+                    <div class="session-right">
+                        <div class="session-metrics">
+                            <div class="metric-value">82 WPM</div>
+                            <div class="metric-label">94% accuracy</div>
+                        </div>
+                        <div class="assist-badge">3 assists</div>
+                    </div>
+                </div>
+                
+                <div class="session-item">
+                    <div class="session-left">
+                        <div class="session-icon">📅</div>
+                        <div>
+                            <div class="session-date">Nov 25</div>
+                            <div class="session-details">12 minutes • 198 words</div>
+                        </div>
+                    </div>
+                    <div class="session-right">
+                        <div class="session-metrics">
+                            <div class="metric-value">78 WPM</div>
+                            <div class="metric-label">91% accuracy</div>
+                        </div>
+                        <div class="assist-badge">5 assists</div>
+                    </div>
+                </div>
+                
+                <div class="session-item">
+                    <div class="session-left">
+                        <div class="session-icon">📅</div>
+                        <div>
+                            <div class="session-date">Nov 24</div>
+                            <div class="session-details">18 minutes • 312 words</div>
+                        </div>
+                    </div>
+                    <div class="session-right">
+                        <div class="session-metrics">
+                            <div class="metric-value">85 WPM</div>
+                            <div class="metric-label">96% accuracy</div>
+                        </div>
+                        <div class="assist-badge">2 assists</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Achievements -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">🏆 Achievements</div>
+            </div>
+            
+            <div class="achievements-grid">
+                <div class="achievement-card achievement-card-earned">
+                    <div class="achievement-icon">🏆</div>
+                    <div>
+                        <div class="achievement-name">First Steps</div>
+                        <div class="achievement-description">Completed your first reading session</div>
+                        <div class="achievement-earned">✓ Earned</div>
+                    </div>
+                </div>
+                
+                <div class="achievement-card achievement-card-earned">
+                    <div class="achievement-icon">🏆</div>
+                    <div>
+                        <div class="achievement-name">Speed Reader</div>
+                        <div class="achievement-description">Read at 80+ WPM</div>
+                        <div class="achievement-earned">✓ Earned</div>
+                    </div>
+                </div>
+                
+                <div class="achievement-card achievement-card-locked">
+                    <div class="achievement-icon achievement-icon-locked">🏆</div>
+                    <div>
+                        <div class="achievement-name">Persistent</div>
+                        <div class="achievement-description">Complete 5 sessions</div>
+                    </div>
+                </div>
+                
+                <div class="achievement-card achievement-card-earned">
+                    <div class="achievement-icon">🏆</div>
+                    <div>
+                        <div class="achievement-name">Perfectionist</div>
+                        <div class="achievement-description">Achieve 95% accuracy</div>
+                        <div class="achievement-earned">✓ Earned</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

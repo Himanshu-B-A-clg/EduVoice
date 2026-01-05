@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduVoice - Parent Dashboard Mockup</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Verdana', 'Tahoma', Arial, sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #faf5ff 50%, #fef3c7 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        
+        /* Header */
+        .header {
+            margin-bottom: 32px;
+        }
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 8px;
+        }
+        .header-title h1 {
+            font-size: 40px;
+            color: #1f2937;
+        }
+        .header-icon {
+            font-size: 40px;
+        }
+        .header p {
+            font-size: 20px;
+            color: #6b7280;
+        }
+        
+        /* Children Cards */
+        .children-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        .child-card {
+            background: white;
+            padding: 32px;
+            border-radius: 32px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 4px solid transparent;
+        }
+        .child-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+        }
+        .child-card-selected {
+            border-color: #c084fc;
+            box-shadow: 0 8px 30px rgba(192, 132, 252, 0.3);
+        }
+        .child-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 24px;
+        }
+        .child-name {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+        .child-info {
+            font-size: 16px;
+            color: #6b7280;
+        }
+        .child-badge {
+            background: linear-gradient(135deg, #f3e8ff, #e9d5ff);
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 20px;
+        }
+        
+        /* Mini Stats */
+        .mini-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        .mini-stat {
+            padding: 16px;
+            border-radius: 16px;
+            text-align: center;
+        }
+        .mini-stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        .mini-stat-label {
+            font-size: 12px;
+            color: #6b7280;
+        }
+        
+        /* Add Child Card */
+        .add-child-card {
+            background: white;
+            border: 3px dashed #d1d5db;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 250px;
+            color: #9ca3af;
+            transition: all 0.3s;
+        }
+        .add-child-card:hover {
+            border-color: #c084fc;
+            color: #c084fc;
+        }
+        .add-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+        .add-text {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        /* Selected Child Section */
+        .section {
+            background: white;
+            padding: 32px;
+            border-radius: 32px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+        .section-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1f2937;
+        }
+        .download-btn {
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s;
+        }
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(14, 165, 233, 0.3);
+        }
+        
+        /* Session Card */
+        .session-card {
+            border: 2px solid #e5e7eb;
+            border-radius: 24px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+        .session-header {
+            background: #f9fafb;
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .session-header:hover {
+            background: #f3f4f6;
+        }
+        .session-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .session-icon {
+            font-size: 20px;
+            color: #0ea5e9;
+        }
+        .session-date {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+        .session-summary {
+            font-size: 14px;
+            color: #6b7280;
+        }
+        .chevron {
+            font-size: 24px;
+            color: #9ca3af;
+        }
+        
+        /* Expanded Session Content */
+        .session-content {
+            padding: 32px 24px;
+            background: white;
+            border-top: 2px solid #e5e7eb;
+        }
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+        .metric-card {
+            padding: 20px;
+            border-radius: 16px;
+            text-align: center;
+        }
+        .metric-card-primary { background: linear-gradient(135deg, #dbeafe, #bfdbfe); }
+        .metric-card-success { background: linear-gradient(135deg, #d1fae5, #a7f3d0); }
+        .metric-card-accent { background: linear-gradient(135deg, #fef3c7, #fde68a); }
+        .metric-card-calm { background: linear-gradient(135deg, #f3e8ff, #e9d5ff); }
+        
+        .metric-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        .metric-value {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        .metric-value-primary { color: #0284c7; }
+        .metric-value-success { color: #059669; }
+        .metric-value-accent { color: #d97706; }
+        .metric-value-calm { color: #7c3aed; }
+        
+        .metric-label {
+            font-size: 14px;
+            color: #6b7280;
+        }
+        
+        /* Problem Words */
+        .problem-words-section {
+            margin-top: 24px;
+        }
+        .problem-words-title {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 16px;
+        }
+        .problem-words {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .problem-word {
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+            color: #991b1b;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        /* Assist Timeline (Heatmap) */
+        .timeline {
+            margin-top: 32px;
+            padding: 24px;
+            background: #f9fafb;
+            border-radius: 16px;
+        }
+        .timeline-title {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 16px;
+        }
+        .timeline-bar {
+            height: 60px;
+            background: #e5e7eb;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+        .timeline-marker {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+            border: 2px solid white;
+        }
+        .marker-hesitation { background: #fbbf24; left: 15%; }
+        .marker-repeat { background: #fb923c; left: 35%; }
+        .marker-manual { background: #60a5fa; left: 62%; }
+        .marker-confidence { background: #c084fc; left: 78%; }
+        
+        .timeline-legend {
+            display: flex;
+            gap: 24px;
+            margin-top: 16px;
+            font-size: 12px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-title">
+                <span class="header-icon">👨‍👩‍👧‍👦</span>
+                <h1>Parent Dashboard</h1>
+            </div>
+            <p>Monitor your children's reading progress</p>
+        </div>
+        
+        <!-- Children Cards -->
+        <div class="children-grid">
+            <!-- Emma (Selected) -->
+            <div class="child-card child-card-selected">
+                <div class="child-header">
+                    <div>
+                        <div class="child-name">Emma</div>
+                        <div class="child-info">Age 9 • Grade 3</div>
+                    </div>
+                    <div class="child-badge">👧</div>
+                </div>
+                <div class="mini-stats">
+                    <div class="mini-stat" style="background: #dbeafe;">
+                        <div class="mini-stat-value" style="color: #0284c7;">65</div>
+                        <div class="mini-stat-label">Avg WPM</div>
+                    </div>
+                    <div class="mini-stat" style="background: #d1fae5;">
+                        <div class="mini-stat-value" style="color: #059669;">89%</div>
+                        <div class="mini-stat-label">Accuracy</div>
+                    </div>
+                    <div class="mini-stat" style="background: #fef3c7;">
+                        <div class="mini-stat-value" style="color: #d97706;">16</div>
+                        <div class="mini-stat-label">Assists</div>
+                    </div>
+                    <div class="mini-stat" style="background: #f3e8ff;">
+                        <div class="mini-stat-value" style="color: #7c3aed;">2</div>
+                        <div class="mini-stat-label">Sessions</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Lucas -->
+            <div class="child-card">
+                <div class="child-header">
+                    <div>
+                        <div class="child-name">Lucas</div>
+                        <div class="child-info">Age 11 • Grade 5</div>
+                    </div>
+                    <div class="child-badge">👦</div>
+                </div>
+                <div class="mini-stats">
+                    <div class="mini-stat" style="background: #dbeafe;">
+                        <div class="mini-stat-value" style="color: #0284c7;">88</div>
+                        <div class="mini-stat-label">Avg WPM</div>
+                    </div>
+                    <div class="mini-stat" style="background: #d1fae5;">
+                        <div class="mini-stat-value" style="color: #059669;">94%</div>
+                        <div class="mini-stat-label">Accuracy</div>
+                    </div>
+                    <div class="mini-stat" style="background: #fef3c7;">
+                        <div class="mini-stat-value" style="color: #d97706;">7</div>
+                        <div class="mini-stat-label">Assists</div>
+                    </div>
+                    <div class="mini-stat" style="background: #f3e8ff;">
+                        <div class="mini-stat-value" style="color: #7c3aed;">2</div>
+                        <div class="mini-stat-label">Sessions</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Add Child -->
+            <div class="child-card add-child-card">
+                <div class="add-icon">+</div>
+                <div class="add-text">Add Child</div>
+            </div>
+        </div>
+        
+        <!-- Emma's Progress Section -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">Emma's Progress</div>
+                <button class="download-btn">
+                    <span>📥</span>
+                    Download Report
+                </button>
+            </div>
+            
+            <!-- Session 1 - Expanded -->
+            <div class="session-card">
+                <div class="session-header">
+                    <div class="session-left">
+                        <div class="session-icon">📅</div>
+                        <div>
+                            <div class="session-date">Monday, November 26</div>
+                            <div class="session-summary">65 WPM • 89% accuracy • 7 assists</div>
+                        </div>
+                    </div>
+                    <div class="chevron">▼</div>
+                </div>
+                
+                <div class="session-content">
+                    <!-- Metrics -->
+                    <div class="metrics-grid">
+                        <div class="metric-card metric-card-primary">
+                            <div class="metric-icon">📈</div>
+                            <div class="metric-value metric-value-primary">65</div>
+                            <div class="metric-label">Words/Min</div>
+                        </div>
+                        <div class="metric-card metric-card-success">
+                            <div class="metric-value metric-value-success">89%</div>
+                            <div class="metric-label">Accuracy</div>
+                        </div>
+                        <div class="metric-card metric-card-accent">
+                            <div class="metric-icon">🎤</div>
+                            <div class="metric-value metric-value-accent">7</div>
+                            <div class="metric-label">Assists</div>
+                        </div>
+                        <div class="metric-card metric-card-calm">
+                            <div class="metric-icon">⏱️</div>
+                            <div class="metric-value metric-value-calm">12m</div>
+                            <div class="metric-label">Duration</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Problem Words -->
+                    <div class="problem-words-section">
+                        <div class="problem-words-title">Words That Needed Help:</div>
+                        <div class="problem-words">
+                            <span class="problem-word">magnificent</span>
+                            <span class="problem-word">enormous</span>
+                            <span class="problem-word">ancient</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Assist Timeline -->
+                    <div class="timeline">
+                        <div class="timeline-title">Assist Timeline (Session Duration: 12 min)</div>
+                        <div class="timeline-bar">
+                            <div class="timeline-marker marker-hesitation" title="Hesitation at 02:15"></div>
+                            <div class="timeline-marker marker-repeat" title="Repeat at 05:42"></div>
+                            <div class="timeline-marker marker-manual" title="Manual help at 08:30"></div>
+                            <div class="timeline-marker marker-confidence" title="Low confidence at 10:15"></div>
+                        </div>
+                        <div class="timeline-legend">
+                            <div class="legend-item">
+                                <div class="legend-dot" style="background: #fbbf24;"></div>
+                                <span>Hesitation</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-dot" style="background: #fb923c;"></div>
+                                <span>Repeat</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-dot" style="background: #60a5fa;"></div>
+                                <span>Manual</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-dot" style="background: #c084fc;"></div>
+                                <span>Low Confidence</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Session 2 - Collapsed -->
+            <div class="session-card">
+                <div class="session-header">
+                    <div class="session-left">
+                        <div class="session-icon">📅</div>
+                        <div>
+                            <div class="session-date">Sunday, November 25</div>
+                            <div class="session-summary">62 WPM • 86% accuracy • 9 assists</div>
+                        </div>
+                    </div>
+                    <div class="chevron">▶</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

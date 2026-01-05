@@ -1,0 +1,155 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* OpenDyslexic Font */
+/* OpenDyslexic Font - Commented out due to CORS issues on local env
+@font-face {
+  font-family: 'OpenDyslexic';
+  src: url('https://dyslexicfonts.com/fonts/OpenDyslexic-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'OpenDyslexic';
+  src: url('https://dyslexicfonts.com/fonts/OpenDyslexic-Bold.woff2') format('woff2');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+*/
+
+/* Base styles for accessibility */
+@layer base {
+  body {
+    @apply bg-gradient-to-br from-primary-50 via-calm-50 to-accent-50;
+    @apply text-gray-800 font-readable;
+    @apply min-h-screen;
+  }
+
+  /* Reduced motion for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* High contrast focus indicators */
+  *:focus-visible {
+    @apply outline-4 outline-offset-2 outline-primary-500 rounded-lg;
+  }
+
+  /* Improve text readability */
+  p, span, div {
+    @apply leading-relaxed;
+  }
+}
+
+@layer components {
+  /* Dyslexia-friendly button styles */
+  .btn {
+    @apply px-6 py-3 rounded-2xl font-semibold transition-all duration-200;
+    @apply shadow-md hover:shadow-lg;
+    @apply focus:outline-none focus:ring-4;
+  }
+
+  .btn-primary {
+    @apply bg-primary-500 text-white hover:bg-primary-600;
+    @apply focus:ring-primary-300;
+  }
+
+  .btn-secondary {
+    @apply bg-calm-300 text-gray-800 hover:bg-calm-400;
+    @apply focus:ring-calm-200;
+  }
+
+  .btn-success {
+    @apply bg-success-400 text-white hover:bg-success-500;
+    @apply focus:ring-success-200;
+  }
+
+  /* Card styles */
+  .card {
+    @apply bg-white rounded-3xl shadow-lg p-6;
+    @apply border-2 border-transparent;
+    @apply transition-all duration-200;
+  }
+
+  .card-hover {
+    @apply hover:border-primary-300 hover:shadow-xl;
+  }
+
+  /* Reading text styles */
+  .reading-text {
+    @apply text-xl md:text-2xl lg:text-3xl;
+    @apply leading-loose tracking-wide;
+    @apply select-none;
+  }
+
+  /* Microphone indicator */
+  .mic-pulse {
+    animation: micPulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes micPulse {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.7;
+      transform: scale(1.1);
+    }
+  }
+
+  /* Word highlight for reading */
+  .word-highlight {
+    @apply bg-accent-200 px-1 rounded-md;
+    @apply transition-all duration-150;
+  }
+
+  .word-problem {
+    @apply bg-red-200 border-2 border-red-400 px-2 py-1 rounded-lg;
+    animation: problemPulse 0.8s ease-in-out 3;
+  }
+
+  @keyframes problemPulse {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+  }
+}
+
+@layer utilities {
+  /* Custom spacing for dyslexic readers */
+  .letter-spacing-wide {
+    letter-spacing: 0.12em;
+  }
+
+  .word-spacing-wide {
+    word-spacing: 0.3em;
+  }
+
+  /* Smooth animations */
+  .animate-appear {
+    animation: appear 0.3s ease-out;
+  }
+
+  @keyframes appear {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
