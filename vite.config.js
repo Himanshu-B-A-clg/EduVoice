@@ -4,7 +4,7 @@ import react from '@vitejs/plugin-react'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: '/EduVoice/', // Repository name for GitHub Pages
+  // base: '/EduVoice/', // REMOVED for Vercel deployment
   server: {
     port: 3000,
     open: true
