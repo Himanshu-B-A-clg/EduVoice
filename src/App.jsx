@@ -5,11 +5,13 @@ import Dashboard from './pages/Dashboard';
 import Reader from './pages/Reader';
 import Reports from './pages/Reports';
 import ParentDashboard from './pages/ParentDashboard';
+import AdminDashboard from './pages/AdminDashboard';
 import Navigation from './components/Navigation';
 
 // Protected Route wrapper
 const ProtectedRoute = ({ children, requireParent = false }) => {
   const { isAuthenticated, isParent, loading } = useAuth();
+  const isAdminSession = localStorage.getItem('eduvoice_admin_session') === 'true';
 
   if (loading) {
     return (
@@ -17,6 +19,11 @@ const ProtectedRoute = ({ children, requireParent = false }) => {
         <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-primary-500"></div>
       </div>
     );
+  }
+
+  // Allow admin session to override auth checks for parent dashboard viewing
+  if (isAdminSession) {
+    return children;
   }
 
   if (!isAuthenticated) {
@@ -28,6 +35,11 @@ const ProtectedRoute = ({ children, requireParent = false }) => {
   }
 
   return children;
+};
+
+const ProtectedAdminRoute = ({ children }) => {
+  const isAdminSession = localStorage.getItem('eduvoice_admin_session') === 'true';
+  return isAdminSession ? children : <Navigate to="/login" replace />;
 };
 
 function AppRoutes() {
@@ -68,6 +80,14 @@ function AppRoutes() {
             <ProtectedRoute requireParent={true}>
               <ParentDashboard />
             </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin-dashboard"
+          element={
+            <ProtectedAdminRoute>
+              <AdminDashboard />
+            </ProtectedAdminRoute>
           }
         />
         <Route path="/" element={<Navigate to="/dashboard" replace />} />

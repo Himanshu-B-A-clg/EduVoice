@@ -93,6 +93,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     localStorage.removeItem('eduvoice_child_session');
+    localStorage.removeItem('eduvoice_admin_session');
     await signOut(auth);
     setUser(null);
   };

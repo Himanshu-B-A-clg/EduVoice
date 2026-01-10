@@ -37,6 +37,8 @@ const Reader = () => {
 
   // Assistance
   const [showAssistPopover, setShowAssistPopover] = useState(false);
+  const [showStrugglePrompt, setShowStrugglePrompt] = useState(false);
+  const [currentStruggleWord, setCurrentStruggleWord] = useState(null);
   const [assistData, setAssistData] = useState(null);
   const [isSpeaking, setIsSpeaking] = useState(false);
 
@@ -59,7 +61,7 @@ const Reader = () => {
 
     const checkSilence = () => {
       const timeSinceSpeech = Date.now() - lastSpeechTimeRef.current;
-      if (timeSinceSpeech > 4000 && !showAssistPopover && matchedIndexRef.current < words.length) {
+      if (timeSinceSpeech > 4000 && !showAssistPopover && !showStrugglePrompt && matchedIndexRef.current < words.length) {
         // User stuck for 4 seconds
         handleSilenceDetected();
       }
@@ -68,7 +70,7 @@ const Reader = () => {
 
     silenceTimerRef.current = requestAnimationFrame(checkSilence);
     return () => cancelAnimationFrame(silenceTimerRef.current);
-  }, [isMicActive, showAssistPopover, words]);
+  }, [isMicActive, showAssistPopover, showStrugglePrompt, words]);
 
   useEffect(() => {
     asrService.current = new ASRService();
@@ -126,14 +128,33 @@ const Reader = () => {
   };
 
   const handleSilenceDetected = () => {
-    // Only trigger if we aren't showing help
-    if (!showAssistPopover && matchedIndexRef.current < words.length) {
+    // Trigger prompt
+    if (matchedIndexRef.current < words.length) {
       const currentWord = words[matchedIndexRef.current];
       if (currentWord) {
-        requestHelp(currentWord);
-        // Reset timer significantly to prevent immediate re-trigger after closing
-        lastSpeechTimeRef.current = Date.now() + 2000;
+        setCurrentStruggleWord(currentWord);
+        setShowStrugglePrompt(true);
+        // Pause detection while prompting
+        lastSpeechTimeRef.current = Date.now() + 100000;
       }
+    }
+  };
+
+  const handleStruggleResponse = (acceptHelp) => {
+    setShowStrugglePrompt(false);
+    if (!currentStruggleWord) return;
+
+    const cleanWord = currentStruggleWord.toLowerCase().replace(/[.,!?]/g, '');
+
+    // Always mark as struggle if we had to ask
+    setStruggleWords(prev => [...prev, cleanWord]);
+
+    if (acceptHelp) {
+      requestHelp(currentStruggleWord);
+      // Timer will be managed by Assist closing
+    } else {
+      // User declined help, just reset timer to give them time to try again
+      lastSpeechTimeRef.current = Date.now();
     }
   };
 
@@ -154,7 +175,15 @@ const Reader = () => {
     setIsMicActive(false);
 
     const durationMins = (Date.now() - (startTime || Date.now())) / 60000;
-    const finalAccuracy = Math.round((matchedIndex / words.length) * 100);
+
+    const uniqueStruggles = new Set(struggleWords).size;
+    let calcAccuracy = 0;
+    if (words.length > 0) {
+      const properWords = Math.max(0, matchedIndex - uniqueStruggles);
+      calcAccuracy = Math.round((properWords / words.length) * 100);
+    }
+
+    const finalAccuracy = calcAccuracy;
     const finalWpm = durationMins > 0 ? Math.round(matchedIndex / durationMins) : 0;
 
     const completedSession = {
@@ -181,7 +210,11 @@ const Reader = () => {
     const cleanWord = word.replace(/[.,!?]/g, '');
 
     // Track
-    setStruggleWords(prev => [...prev, cleanWord.toLowerCase()]);
+    // Struggle is already tracked in handleStruggleResponse or direct click.
+    // If called via Click, we should track it too.
+    if (!showStrugglePrompt) {
+      setStruggleWords(prev => [...prev, cleanWord.toLowerCase()]);
+    }
 
     // Get complex simplification
     const simpleData = await simplificationService.current.simplifyWord(cleanWord, passage.content);
@@ -282,10 +315,45 @@ const Reader = () => {
           {showAssistPopover && assistData && (
             <AssistPopover
               data={assistData}
-              onClose={() => setShowAssistPopover(false)}
+              onClose={() => {
+                setShowAssistPopover(false);
+                // Smoothness: Give time after closing before checking silence again
+                lastSpeechTimeRef.current = Date.now() + 1000;
+              }}
               onHearIt={(text) => ttsService.current.speak(text)}
               isSpeaking={isSpeaking}
             />
+          )}
+        </AnimatePresence>
+
+        {/* Struggle Help Prompt */}
+        <AnimatePresence>
+          {showStrugglePrompt && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full text-center border-4 border-yellow-200"
+              >
+                <h3 className="text-xl font-bold text-gray-800 mb-2">Tricky Word?</h3>
+                <p className="text-gray-600 mb-6">This word looks a bit hard. Do you need some help?</p>
+
+                <div className="grid grid-cols-1 gap-3">
+                  <button
+                    onClick={() => handleStruggleResponse(true)}
+                    className="btn bg-primary-600 text-white shadow-lg hover:bg-primary-700 text-lg py-3"
+                  >
+                    Yes, Read it Aloud
+                  </button>
+                  <button
+                    onClick={() => handleStruggleResponse(false)}
+                    className="btn bg-gray-100 text-gray-600 hover:bg-gray-200 text-lg py-3"
+                  >
+                    No, I'll Try It
+                  </button>
+                </div>
+              </motion.div>
+            </div>
           )}
         </AnimatePresence>
       </div>

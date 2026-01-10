@@ -1,14 +1,48 @@
-import { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useMemo, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { ArrowLeft, TrendingUp, Award, Clock } from 'lucide-react';
+import { ArrowLeft, TrendingUp, Award, Clock, Shield, FileText } from 'lucide-react';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../firebase';
 
 const Reports = () => {
   const { user, isParent } = useAuth();
-  const [selectedChildId, setSelectedChildId] = useState(user?.children?.[0]?.id || null);
+  const location = useLocation();
+  const navigate = useNavigate();
 
-  const children = user?.children || [];
+  // Impersonation Logic
+  const viewAsId = location.state?.viewAsId;
+  const [impersonatedUser, setImpersonatedUser] = useState(null);
+  const isAdminSession = localStorage.getItem('eduvoice_admin_session') === 'true';
+
+  useEffect(() => {
+    const fetchImpersonatedUser = async () => {
+      if (!viewAsId) return;
+      try {
+        const userDoc = await getDoc(doc(db, "users", viewAsId));
+        if (userDoc.exists()) {
+          setImpersonatedUser({ id: userDoc.id, ...userDoc.data() });
+        }
+      } catch (e) {
+        console.error("Failed to fetch user for reports view", e);
+      }
+    };
+    fetchImpersonatedUser();
+  }, [viewAsId]);
+
+  const activeUser = viewAsId ? impersonatedUser : user;
+  const children = activeUser?.children || [];
+
+  const [selectedChildId, setSelectedChildId] = useState(null);
+
+  // Update selected child when children load
+  useEffect(() => {
+    if (children.length > 0 && !selectedChildId) {
+      setSelectedChildId(children[0].id);
+    }
+  }, [children, selectedChildId]);
+
   const selectedChild = children.find(c => c.id === selectedChildId) || children[0];
 
   const stats = useMemo(() => {
@@ -46,7 +80,8 @@ const Reports = () => {
     return { avgWpm, avgAcc, totalSessions: completed.length, chartData, difficultyData };
   }, [selectedChild]);
 
-  if (!isParent) {
+  // Auth Check (Bypass if Admin Session or Impersonating)
+  if (!isParent && !viewAsId && !isAdminSession) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
         <div className="card text-center max-w-md">
@@ -58,19 +93,32 @@ const Reports = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex items-center gap-4 mb-8">
-          <Link to="/parent-dashboard" className="p-2 bg-white rounded-full shadow hover:bg-gray-100">
+    <div className="min-h-screen bg-gray-50 pb-12">
+      {/* Admin Banner */}
+      {viewAsId && (
+        <div className="bg-orange-500 text-white p-3 text-center font-bold flex items-center justify-center gap-2 shadow-md mb-6">
+          <Shield className="h-5 w-5" /> Viewing Reports as {activeUser?.name || 'Parent'}.
+          <button onClick={() => navigate('/admin-dashboard')} className="ml-4 bg-white text-orange-600 px-3 py-1 rounded text-sm hover:bg-orange-50">Exit View</button>
+        </div>
+      )}
+
+      <div className="max-w-6xl mx-auto px-6">
+        <div className="flex items-center gap-4 mb-8 pt-6">
+          <button onClick={() => viewAsId ? navigate('/admin-dashboard') : navigate('/parent-dashboard')} className="p-2 bg-white rounded-full shadow hover:bg-gray-100 transition">
             <ArrowLeft className="h-6 w-6 text-gray-600" />
-          </Link>
-          <h1 className="text-3xl font-bold text-gray-800">Progress Reports</h1>
+          </button>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-800 flex items-center gap-2">
+              <FileText className="text-primary-500 hidden md:block" /> Progress Reports
+            </h1>
+            {viewAsId && <p className="text-gray-500">Analyzing data for {activeUser?.name}'s family</p>}
+          </div>
         </div>
 
         {children.length === 0 ? (
           <div className="card text-center p-12">
-            <p>No children added yet.</p>
-            <Link to="/parent-dashboard" className="btn btn-primary mt-4">Add Child</Link>
+            <p className="text-gray-500">No children accounts found.</p>
+            {!viewAsId && <Link to="/parent-dashboard" className="btn btn-primary mt-4">Add Child</Link>}
           </div>
         ) : (
           <div className="grid lg:grid-cols-4 gap-6">
@@ -81,10 +129,10 @@ const Reports = () => {
                 <button
                   key={child.id}
                   onClick={() => setSelectedChildId(child.id)}
-                  className={`w-full text-left p-4 rounded-xl transition-all ${selectedChild?.id === child.id ? 'bg-primary-600 text-white shadow-lg' : 'bg-white hover:bg-gray-50'}`}
+                  className={`w-full text-left p-4 rounded-xl transition-all border ${selectedChildId === child.id ? 'bg-primary-600 text-white shadow-lg border-primary-600' : 'bg-white hover:bg-gray-50 border-gray-100'}`}
                 >
                   <div className="font-bold text-lg">{child.name}</div>
-                  <div className="text-sm opacity-80">{child.sessions?.filter(s => s.status === 'completed').length || 0} Sessions Completed</div>
+                  <div className={`text-sm ${selectedChildId === child.id ? 'text-primary-100' : 'text-gray-500'}`}>{child.sessions?.filter(s => s.status === 'completed').length || 0} Sessions Completed</div>
                 </button>
               ))}
             </div>
@@ -92,43 +140,43 @@ const Reports = () => {
             {/* Main Content */}
             <div className="lg:col-span-3 space-y-6">
               {stats ? (
-                <>
+                <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                   {/* Key Stats Cards */}
-                  <div className="grid grid-cols-3 gap-4">
+                  <div className="grid grid-cols-3 gap-4 mb-6">
                     <div className="card p-6 bg-white border-l-4 border-primary-500">
                       <div className="flex items-center gap-3 mb-2">
                         <div className="p-2 bg-primary-100 rounded-lg"><TrendingUp className="h-5 w-5 text-primary-600" /></div>
-                        <span className="text-gray-500 font-medium">Avg WPM</span>
+                        <span className="text-gray-500 font-medium text-sm">Avg WPM</span>
                       </div>
                       <div className="text-3xl font-bold text-gray-800">{stats.avgWpm}</div>
                     </div>
                     <div className="card p-6 bg-white border-l-4 border-green-500">
                       <div className="flex items-center gap-3 mb-2">
                         <div className="p-2 bg-green-100 rounded-lg"><Award className="h-5 w-5 text-green-600" /></div>
-                        <span className="text-gray-500 font-medium">Avg Accuracy</span>
+                        <span className="text-gray-500 font-medium text-sm">Avg Accuracy</span>
                       </div>
                       <div className="text-3xl font-bold text-gray-800">{stats.avgAcc}%</div>
                     </div>
                     <div className="card p-6 bg-white border-l-4 border-purple-500">
                       <div className="flex items-center gap-3 mb-2">
                         <div className="p-2 bg-purple-100 rounded-lg"><Clock className="h-5 w-5 text-purple-600" /></div>
-                        <span className="text-gray-500 font-medium">Total Sessions</span>
+                        <span className="text-gray-500 font-medium text-sm">Total Sessions</span>
                       </div>
                       <div className="text-3xl font-bold text-gray-800">{stats.totalSessions}</div>
                     </div>
                   </div>
 
                   {/* Chart */}
-                  <div className="card p-6 bg-white shadow-lg mb-6">
-                    <h3 className="text-xl font-bold text-gray-800 mb-6">Reading Velocity (WPM)</h3>
+                  <div className="card p-6 bg-white shadow-lg mb-6 border border-gray-100">
+                    <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2"><TrendingUp size={20} className="text-blue-500" /> Reading Velocity (WPM)</h3>
                     <div className="h-80 w-full">
                       <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={stats.chartData}>
-                          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                          <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: '#6B7280' }} dy={10} />
-                          <YAxis axisLine={false} tickLine={false} tick={{ fill: '#6B7280' }} />
+                          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F3F4F6" />
+                          <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: '#9CA3AF' }} dy={10} />
+                          <YAxis axisLine={false} tickLine={false} tick={{ fill: '#9CA3AF' }} />
                           <Tooltip
-                            contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                            contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
                           />
                           <Legend wrapperStyle={{ paddingTop: '20px' }} />
                           <Line
@@ -136,8 +184,8 @@ const Reports = () => {
                             dataKey="wpm"
                             stroke="#4F46E5"
                             strokeWidth={3}
-                            dot={{ r: 4, strokeWidth: 2 }}
-                            activeDot={{ r: 6 }}
+                            dot={{ r: 4, strokeWidth: 2, fill: '#fff', stroke: '#4F46E5' }}
+                            activeDot={{ r: 6, fill: '#4F46E5' }}
                             name="Words Per Minute"
                           />
                         </LineChart>
@@ -147,8 +195,8 @@ const Reports = () => {
 
                   {/* Difficulty Analysis */}
                   {stats.difficultyData.length > 0 && (
-                    <div className="card p-6 bg-white shadow-lg">
-                      <h3 className="text-xl font-bold text-gray-800 mb-6">Most Challenging Words</h3>
+                    <div className="card p-6 bg-white shadow-lg border border-gray-100">
+                      <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2"><Shield size={20} className="text-red-500" /> Most Challenging Words</h3>
                       <div className="h-80 w-full">
                         <ResponsiveContainer width="100%" height="100%">
                           <BarChart data={stats.difficultyData} layout="vertical">
@@ -162,9 +210,9 @@ const Reports = () => {
                       </div>
                     </div>
                   )}
-                </>
+                </div>
               ) : (
-                <div className="card p-12 text-center bg-white">
+                <div className="card p-12 text-center bg-white border border-gray-100">
                   <TrendingUp className="h-16 w-16 text-gray-300 mx-auto mb-4" />
                   <h3 className="text-xl font-bold text-gray-400">No Data Available</h3>
                   <p className="text-gray-400">Complete reading sessions to visualize progress.</p>

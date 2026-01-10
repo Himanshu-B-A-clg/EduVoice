@@ -58,15 +58,12 @@ export class SimplificationService {
 
   /**
    * Get simplified version of a word or phrase
-   * In production, this would call an LLM API
+   * In production, this calls the LLM API
    */
   async simplifyWord(word, context = '') {
-    // Simulate API delay
-    await this.delay(300);
-
     const lowerWord = word.toLowerCase().trim();
-    
-    // Check database first
+
+    // Check cached/fast database first for instant results
     if (this.simplificationDatabase[lowerWord]) {
       return {
         original: word,
@@ -78,7 +75,29 @@ export class SimplificationService {
       };
     }
 
-    // Generate mock simplification for unknown words
+    try {
+      const response = await fetch(import.meta.env.VITE_API_URL + '/api/simplify-word', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ word, context })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        return {
+          original: word,
+          simplified: data.simplified,
+          explanation: data.explanation,
+          example: data.example,
+          context,
+          confidence: 0.9
+        };
+      }
+    } catch (e) {
+      console.warn("Backend simplification failed, using fallback:", e);
+    }
+
+    // Generate mock simplification for unknown words (Fallback)
     return this.generateMockSimplification(word, context);
   }
 
@@ -113,7 +132,7 @@ export class SimplificationService {
 
     // Mock syllable breakdown
     const syllables = this.breakIntoSyllables(word);
-    
+
     return {
       word,
       syllables,
@@ -129,7 +148,7 @@ export class SimplificationService {
     await this.delay(300);
 
     const lowerWord = word.toLowerCase().trim();
-    
+
     if (this.simplificationDatabase[lowerWord]) {
       return {
         word,
@@ -154,32 +173,32 @@ export class SimplificationService {
   generateMockSimplification(word, context) {
     // Create contextual simplifications based on common word patterns
     const lowerWord = word.toLowerCase();
-    
+
     // Common word patterns and their simplifications
     const patterns = {
       // Words ending in -ly
       'quickly': { simple: 'fast', explanation: 'Moving with speed.', example: 'The rabbit ran fast.' },
       'slowly': { simple: 'slow', explanation: 'Not moving fast.', example: 'The turtle moved slow.' },
       'carefully': { simple: 'with care', explanation: 'Being gentle and paying attention.', example: 'Hold the baby with care.' },
-      
+
       // Action words
       'approached': { simple: 'came near', explanation: 'Moved closer to something.', example: 'The dog came near the food.' },
       'discovered': { simple: 'found', explanation: 'Finding something new or hidden.', example: 'I found a treasure!' },
       'observed': { simple: 'watched', explanation: 'Looking at something carefully.', example: 'We watched the birds.' },
-      
+
       // Description words
       'curious': { simple: 'interested', explanation: 'Wanting to know or learn about something.', example: 'I am interested in space.' },
       'beautiful': { simple: 'pretty', explanation: 'Something that looks very nice.', example: 'The flower is pretty.' },
       'tiny': { simple: 'very small', explanation: 'Something that is not big at all.', example: 'The ant is very small.' },
       'gigantic': { simple: 'giant', explanation: 'Extremely big in size.', example: 'The building is giant.' },
-      
+
       // Common words
       'the': { simple: 'the', explanation: 'A word used before things we talk about.', example: 'The cat sat on the mat.' },
       'and': { simple: 'and', explanation: 'A word that connects two things.', example: 'I like cats and dogs.' },
       'here': { simple: 'at this place', explanation: 'The place where you are right now.', example: 'Come at this place.' },
       'there': { simple: 'at that place', explanation: 'A place that is not here.', example: 'Go at that place.' },
     };
-    
+
     // Check if we have a specific pattern
     if (patterns[lowerWord]) {
       return {
@@ -192,10 +211,10 @@ export class SimplificationService {
         note: 'MOCK_RESPONSE - Integrate real LLM for production',
       };
     }
-    
+
     // Generate a more intelligent mock based on word characteristics
     let simplified, explanation, example;
-    
+
     if (lowerWord.length <= 3) {
       // Short words - probably don't need simplification
       simplified = word;
@@ -220,13 +239,13 @@ export class SimplificationService {
         { simple: 'easier word', explanation: `Think of "${word}" as an easier word.` },
         { simple: 'simple version', explanation: `"${word}" has a simpler version you can use.` },
       ];
-      
+
       const chosen = alternatives[word.length % alternatives.length];
       simplified = chosen.simple;
       explanation = chosen.explanation;
       example = `Try the simpler word instead of "${word}".`;
     }
-    
+
     return {
       original: word,
       simplified,
