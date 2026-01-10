@@ -98,7 +98,7 @@ const AdminDashboard = () => {
         }
 
         try {
-            const response = await fetch('${import.meta.env.VITE_API_URL}/api/admin/reset-password', {
+            const response = await fetch(import.meta.env.VITE_API_URL + '/api/admin/reset-password', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ uid, new_password: newPassword })
@@ -156,7 +156,7 @@ const AdminDashboard = () => {
         try {
             await deleteDoc(doc(db, "users", uid));
             try {
-                await fetch(`${import.meta.env.VITE_API_URL}/api/admin/parents/${uid}`, { method: 'DELETE' });
+                await fetch(`/api/admin/parents/${uid}`, { method: 'DELETE' });
             } catch (e) { console.warn("Backend delete skipped"); }
             alert('Parent deleted.');
             fetchParents();
@@ -168,7 +168,7 @@ const AdminDashboard = () => {
     const handleSystemTest = async () => {
         setTestResult('Running tests...');
         try {
-            const res = await fetch('${import.meta.env.VITE_API_URL}/health');
+            const res = await fetch(import.meta.env.VITE_API_URL + '/health');
             const data = await res.json();
             setTestResult(`System Online. API Configured: ${data.api_configured}`);
         } catch (err) {
