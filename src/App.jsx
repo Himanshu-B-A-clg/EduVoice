@@ -1,3 +1,4 @@
+import InstallPrompter from './components/InstallPrompter';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Login from './pages/Login';
@@ -101,9 +102,11 @@ function App() {
     <Router>
       <AuthProvider>
         <AppRoutes />
+      <InstallPrompter />
       </AuthProvider>
     </Router>
   );
 }
 
 export default App;
+
