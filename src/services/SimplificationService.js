@@ -76,7 +76,7 @@ export class SimplificationService {
     }
 
     try {
-      const response = await fetch(import.meta.env.VITE_API_URL + '/api/simplify-word', {
+      const response = await fetch('http://localhost:8000/api/simplify-word', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ word, context })

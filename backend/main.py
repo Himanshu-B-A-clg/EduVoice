@@ -53,6 +53,10 @@ class ParagraphRequest(BaseModel):
     level: str
     topic: Optional[str] = "general"
 
+@app.get("/health")
+async def health_check():
+    return {"status": "ok", "message": "EduVoice Backend is running"}
+
 @app.websocket("/ws/transcribe")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
